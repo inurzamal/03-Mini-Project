@@ -1,8 +1,12 @@
 package com.nur.services;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import com.nur.bindingrequest.SearchRequest;
@@ -29,12 +33,42 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public List<SearchResponse> searchPlans(SearchRequest request) {
 		
+		List<EligibilityDtlsEntity> eligRecords = null;
+		
 		if(request == null) {
-			List<EligibilityDtlsEntity> allRecords = repository.findAll();
-		}else {
-			// including null filter total 8 possibilities of filters
+			eligRecords = repository.findAll();
+		}		
+		else {
+			String planName = request.getPlanName();
+			String planStatus = request.getPlanStatus();
+			LocalDate startDate = request.getStartDate();
+			LocalDate endDate = request.getEndDate();	
+			
+			EligibilityDtlsEntity entity = new EligibilityDtlsEntity();
+						
+			if(planName != null && !planName.equals("")) {
+				entity.setPlanName(planName);
+			}
+			
+			if(planStatus != null && !planStatus.equals("")) {
+				entity.setPlanStatus(planStatus);
+			}
+			
+			if(startDate != null && endDate != null) {
+				entity.setStartDate(startDate);
+				entity.setEndDate(endDate);
+			}
+			
+			Example<EligibilityDtlsEntity> of = Example.of(entity);
+			eligRecords = repository.findAll(of);
 		}
-		return null;
+		
+		List<SearchResponse> response = new ArrayList<>();
+		for(EligibilityDtlsEntity eligRecord: eligRecords) {
+			SearchResponse sr = new SearchResponse();
+			BeanUtils.copyProperties(eligRecord, sr);
+			response.add(sr);
+		}
+		return response;		
 	}
-
 }
