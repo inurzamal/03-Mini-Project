@@ -10,7 +10,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.nur.bindingresponse.SearchResponse;
 
-public class ExcelGenrator {
+public class ExcelGenerator {
 	
 	public void generateExcel(List<SearchResponse> response, HttpServletResponse httpResponse) throws Exception{
 
