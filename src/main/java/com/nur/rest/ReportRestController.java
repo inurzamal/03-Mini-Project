@@ -1,6 +1,5 @@
 package com.nur.rest;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lowagie.text.DocumentException;
 import com.nur.bindingrequest.SearchRequest;
 import com.nur.bindingresponse.SearchResponse;
 import com.nur.reports.ExcelGenerator;
@@ -40,17 +38,17 @@ public class ReportRestController {
 	}
 	
 	@GetMapping("/excel")
-	public void generateExcel(HttpServletResponse response) throws Exception {
+	public void generateExcel(HttpServletResponse httpResponse) throws Exception {
 		
-		response.setContentType("application/octet-stream");
+		httpResponse.setContentType("application/octet-stream");
 		
 		String headerKey = "Content-Disposition";
 		String headerValue = "attachment; filename=plans.xls";	
-		response.setHeader(headerKey, headerValue);
+		httpResponse.setHeader(headerKey, headerValue);
 		
 		List<SearchResponse> records = service.searchPlans(null);
-		ExcelGenerator excel = new ExcelGenerator();
-		excel.generateExcel(records, response);	
+		ExcelGenerator excelGen = new ExcelGenerator();
+		excelGen.generateExcel(records, httpResponse);	
 	}
 	
 	@GetMapping("/pdf")
@@ -66,5 +64,19 @@ public class ReportRestController {
 		PdfGenerator pdfGen = new PdfGenerator();
 		pdfGen.generatePdf(records, httpResponse);
 	}
-
+	
+	//Generate PDF based on search request (Not all the records)	
+	@PostMapping("/pdf")
+	public void generatePdfSearched(@RequestBody SearchRequest request, HttpServletResponse httpResponse) throws Exception{
+		
+		httpResponse.setContentType("application/pdf");
+		
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=plans.pdf";	
+		httpResponse.setHeader(headerKey, headerValue);
+					
+		List<SearchResponse> records = service.searchPlans(request);
+		PdfGenerator pdfGen = new PdfGenerator();
+		pdfGen.generatePdf(records, httpResponse);
+	}
 }
