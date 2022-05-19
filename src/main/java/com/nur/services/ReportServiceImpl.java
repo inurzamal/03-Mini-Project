@@ -35,7 +35,7 @@ public class ReportServiceImpl implements ReportService {
 		
 		List<EligibilityDtlsEntity> eligRecords = null;
 		
-		if(request == null) {
+		if(isSearchReqEmpty(request)) {
 			eligRecords = repository.findAll();
 		}		
 		else {
@@ -64,11 +64,27 @@ public class ReportServiceImpl implements ReportService {
 		}
 		
 		List<SearchResponse> response = new ArrayList<>();
+		
 		for(EligibilityDtlsEntity eligRecord: eligRecords) {
 			SearchResponse sr = new SearchResponse();
 			BeanUtils.copyProperties(eligRecord, sr);
 			response.add(sr);
 		}
 		return response;		
+	}
+	
+	@SuppressWarnings("unlikely-arg-type")
+	private boolean isSearchReqEmpty(SearchRequest request) {
+		if(request.getPlanName() != null && !request.getPlanName().equals("")) {
+			return false;
+		}
+		if(request.getPlanStatus() != null && !request.getPlanStatus().equals("")) {
+			return false;
+		}
+		if(request.getStartDate() != null && !request.getStartDate().equals("")) {
+			return false;
+		}
+
+		return true;
 	}
 }
