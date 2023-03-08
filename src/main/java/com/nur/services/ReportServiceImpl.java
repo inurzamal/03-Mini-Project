@@ -68,17 +68,17 @@ public class ReportServiceImpl implements ReportService {
 			eligRecords = repository.findAll(of);
 		}
 		
-		List<SearchResponse> response = new ArrayList<>();
+//		List<SearchResponse> response = new ArrayList<>();
+//		
+//		for(EligibilityDtlsEntity eligRecord: eligRecords) {
+//			SearchResponse sr = new SearchResponse();
+//			BeanUtils.copyProperties(eligRecord, sr);
+//			response.add(sr);
+//		}
 		
-		for(EligibilityDtlsEntity eligRecord: eligRecords) {
-			SearchResponse sr = new SearchResponse();
-			BeanUtils.copyProperties(eligRecord, sr);
-			response.add(sr);
-		}
-		
-//		List<SearchResponse> response = eligRecords.stream()
-//				  .map(eligRecord -> modelMapper.map(eligRecord, SearchResponse.class))
-//				  .collect(Collectors.toList());
+		List<SearchResponse> response = eligRecords.stream()
+				  .map(eligRecord -> modelMapper.map(eligRecord, SearchResponse.class))
+				  .collect(Collectors.toList());
 
 		return response;		
 	}
