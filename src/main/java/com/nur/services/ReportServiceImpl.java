@@ -3,7 +3,9 @@ package com.nur.services;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -19,6 +21,9 @@ public class ReportServiceImpl implements ReportService {
 	
 	@Autowired
 	private EligDtlsRepository repository;
+	
+	@Autowired
+	private ModelMapper modelMapper;
 
 	@Override
 	public List<String> getPlanNames() {
@@ -63,13 +68,18 @@ public class ReportServiceImpl implements ReportService {
 			eligRecords = repository.findAll(of);
 		}
 		
-		List<SearchResponse> response = new ArrayList<>();
+//		List<SearchResponse> response = new ArrayList<>();
+//		
+//		for(EligibilityDtlsEntity eligRecord: eligRecords) {
+//			SearchResponse sr = new SearchResponse();
+//			BeanUtils.copyProperties(eligRecord, sr);
+//			response.add(sr);
+//		}
 		
-		for(EligibilityDtlsEntity eligRecord: eligRecords) {
-			SearchResponse sr = new SearchResponse();
-			BeanUtils.copyProperties(eligRecord, sr);
-			response.add(sr);
-		}
+		List<SearchResponse> response = eligRecords.stream()
+				  .map(eligRecord -> modelMapper.map(eligRecord, SearchResponse.class))
+				  .collect(Collectors.toList());
+
 		return response;		
 	}
 	
